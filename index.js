@@ -1,67 +1,65 @@
-let auth0 = null;
+let auth0ClientInstance = null;
 
 window.addEventListener("load", async () => {
 
     console.log("JS cargado");
 
-    // 🔒 Verifica que Auth0 esté cargado
-    if (typeof createAuth0Client === "undefined") {
-        console.error("Auth0 NO se cargó. Revisa el script en el HTML.");
+    // auth0
+    if (typeof auth0 === "undefined") {
+        console.error("Auth0 no cargó");
         return;
     }
 
-    // 🔐 Inicializar Auth0
-    auth0 = await createAuth0Client({
-        domain: "TU_DOMINIO.auth0.com",
-        clientId: "TU_CLIENT_ID",
+    // 🔐 Crear cliente
+    auth0ClientInstance = await auth0.createAuth0Client({
+        domain: "dev-sdbaeve179970a.us.auth0.com",
+        clientId: "bYtcJXiwFHQbcwScBf0xpoG5Jcqg63Ul",
         authorizationParams: {
             redirect_uri: window.location.origin
         }
     });
 
-    // 🔘 BOTÓN LOGIN
+    //  Botones
     document.getElementById("btn-login").addEventListener("click", () => {
-        console.log("Click login");
-        auth0.loginWithRedirect();
+        auth0ClientInstance.loginWithRedirect();
     });
 
-    // 🔘 BOTÓN LOGOUT
     document.getElementById("btn-logout").addEventListener("click", () => {
-        console.log("Click logout");
         sessionStorage.clear();
-        auth0.logout({
+        auth0ClientInstance.logout({
             logoutParams: {
                 returnTo: window.location.origin
             }
         });
     });
 
-    // 👤 SESIÓN
-    const isAuthenticated = await auth0.isAuthenticated();
+    if (window.location.search.includes("code=")) {
+        await auth0ClientInstance.handleRedirectCallback();
+        window.history.replaceState({}, document.title, "/");
+    }
+
+    // Sesión
+    const isAuthenticated = await auth0ClientInstance.isAuthenticated();
 
     if (isAuthenticated) {
-        const user = await auth0.getUser();
+        const user = await auth0ClientInstance.getUser();
 
         document.getElementById("bienvenida").textContent =
-            `Bienvenido ${user.name}`;
+            `Bienvenido ${user.name || user.email}`;
 
         document.getElementById("btn-login").style.display = "none";
         document.getElementById("btn-logout").style.display = "block";
     }
 
-    // 🛒 Inicializar carrito
-    renderCarrito();
     activarBotones();
+    renderCarrito();
 });
 
 
-// 🛒 ACTIVAR BOTONES
+// Botones
 function activarBotones() {
-    const botones = document.querySelectorAll('.btn-add-cart');
-
-    botones.forEach(btn => {
+    document.querySelectorAll('.btn-add-cart').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            console.log("Producto agregado");
 
             const producto = e.target.closest('.item');
 
@@ -77,7 +75,7 @@ function activarBotones() {
 }
 
 
-// 🛒 AGREGAR PRODUCTO
+// Agregar al carrito
 function agregarProducto(producto) {
     let carrito = JSON.parse(sessionStorage.getItem("carrito")) || [];
 
@@ -95,12 +93,10 @@ function agregarProducto(producto) {
 }
 
 
-// 🛒 MOSTRAR CARRITO
+// Render del carrito
 function renderCarrito() {
     const lista = document.getElementById("lista-carrito");
     const totalElemento = document.getElementById("total");
-
-    if (!lista || !totalElemento) return;
 
     let carrito = JSON.parse(sessionStorage.getItem("carrito")) || [];
 
@@ -120,51 +116,3 @@ function renderCarrito() {
 
     totalElemento.textContent = total;
 }
-
-
-// 💳 FORMULARIO
-document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("form-pago");
-
-    if (!form) return;
-
-    form.addEventListener("submit", function(e) {
-        e.preventDefault();
-
-        const correo = document.getElementById("correo").value;
-        const telefono = document.getElementById("telefono").value;
-
-        const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailValido.test(correo)) {
-            alert("Correo inválido");
-            return;
-        }
-
-        const telefonoValido = /^[0-9]{8,15}$/;
-        if (!telefonoValido.test(telefono)) {
-            alert("Teléfono inválido");
-            return;
-        }
-
-        const carrito = JSON.parse(sessionStorage.getItem("carrito")) || [];
-
-        let resumen = "";
-        let total = 0;
-
-        carrito.forEach(p => {
-            const precio = parseInt(p.precio.replace("$", ""));
-            total += precio * p.cantidad;
-
-            resumen += `<p>${p.nombre} x${p.cantidad}</p>`;
-        });
-
-        document.getElementById("confirmacion").innerHTML = `
-            <h2>Gracias por tu compra</h2>
-            ${resumen}
-            <p>Total: $${total}</p>
-        `;
-
-        sessionStorage.removeItem("carrito");
-        renderCarrito();
-    });
-});
