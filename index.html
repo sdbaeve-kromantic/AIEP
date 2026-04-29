@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportyStyle</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+    <h1>SportyStyle</h1>
+
+    <div class="auth">
+        <button id="btn-login">Iniciar sesión</button>
+        <button id="btn-logout" style="display:none;">Cerrar sesión</button>
+        <p id="bienvenida"></p>
+    </div>
+</header>
+
+<!-- PRODUCTOS -->
+<div class="container-items">
+
+    <div class="item">
+        <figure>
+            <img src="https://images.unsplash.com/vector-1775302182186-2c71170de3de" alt="Camiseta">
+        </figure>
+        <div class="info-producto">
+            <h2>Camiseta deportiva</h2>
+            <p class="descripcion">Camiseta ligera ideal para el deporte.</p>
+            <p class="precio">$30000</p>
+            <button class="btn-add-cart">Agregar al carrito</button>
+        </div>
+    </div>
+
+    <div class="item">
+        <figure>
+            <img src="https://plus.unsplash.com/premium_vector-1758036723929-30e3cd81c815" alt="Pantalón">
+        </figure>
+        <div class="info-producto">
+            <h2>Pantalones deportivos</h2>
+            <p class="descripcion">Pantalones cómodos.</p>
+            <p class="precio">$40000</p>
+            <button class="btn-add-cart">Agregar al carrito</button>
+        </div>
+    </div>
+
+    <div class="item">
+        <figure>
+            <img src="https://plus.unsplash.com/premium_vector-1728526276533-0032ad7cc810" alt="Zapatillas">
+        </figure>
+        <div class="info-producto">
+            <h2>Zapatillas deportivas</h2>
+            <p class="descripcion">Zapatillas cómodas.</p>
+            <p class="precio">$60000</p>
+            <button class="btn-add-cart">Agregar al carrito</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- CARRITO -->
+<div id="carrito">
+    <h3>Carrito</h3>
+    <div id="lista-carrito"></div>
+    <p>Total: $<span id="total">0</span></p>
+</div>
+
+<!-- FORMULARIO -->
+<form id="form-pago">
+    <input type="text" id="nombre" placeholder="Nombre completo" required>
+    <input type="text" id="direccion" placeholder="Dirección" required>
+    <input type="email" id="correo" placeholder="Correo" required>
+    <input type="text" id="telefono" placeholder="Teléfono" required>
+    <button type="submit">Pagar</button>
+</form>
+<div id="confirmacion"></div>
+<script src="https://cdn.auth0.com/js/auth0-spa-js/latest/auth0-spa-js.production.js"></script>
+<script src="index.js"></script>
+</body>
+</html>
